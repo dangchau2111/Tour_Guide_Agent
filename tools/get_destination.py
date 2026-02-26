@@ -47,7 +47,7 @@ def get_destination(filter_tags: str) -> pd.DataFrame:
     df_destination["sim_score"] = sim_scores_list
 
     # Extract the top 5 records with the highest similarity scores
-    df_result = df_destination.nlargest(5, 'sim_score').copy()
+    df_result = df_destination.nlargest(10, 'sim_score').copy()
 
     # Return only the specified columns for the final output
     return df_result[["name", "address", "description"]]

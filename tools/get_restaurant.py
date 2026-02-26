@@ -15,7 +15,7 @@ engine = create_engine(DB_URL)
 
 def get_restaurant(filter_tags: str) -> pd.DataFrame:
     """
-    Fetches restaurant data from the database and returns the top 5 matches
+    Fetches restaurant data from the database and returns the top 10 matches
     based on the similarity between the user's filter tags and the restaurant's category.
     """
     
@@ -48,7 +48,7 @@ def get_restaurant(filter_tags: str) -> pd.DataFrame:
     # Append the calculated similarity scores as a new column in the DataFrame
     df_restaurant["sim_score"] = sim_scores_list
     
-    # Extract the top 5 records with the highest similarity scores
+    # Extract the top 10 records with the highest similarity scores
     df_result = df_restaurant.nlargest(10, 'sim_score').copy()
 
     # Return only the specified columns for the final output

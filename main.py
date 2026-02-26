@@ -9,7 +9,7 @@ import json
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-# Init app
+# Initialize the FastAPI application
 app = FastAPI(title="Quy Nhon AI Tour Guide API", description="API cho trợ lý du lịch ảo")
 
 class ChatRequest(BaseModel):
@@ -19,6 +19,10 @@ class ChatRequest(BaseModel):
 # LOGIC FUNCTIONS
 # ==========================================
 def get_context(user_prompt):
+    """
+    Identifies the user's intent and gathers relevant data from tools 
+    to build the context for the response agent.
+    """
     planning_flag = False
     routing_json_string = get_routing_from_orchestrator(user_prompt)
     print("Orchestrator Routing:", routing_json_string)
@@ -31,6 +35,7 @@ def get_context(user_prompt):
 
     context = ""
 
+    # Check for 'food' intent and fetch relevant data
     if "food" in routing_dict:
         food_data = routing_dict.get("food", {}) 
         type_of_food = food_data.get("type_of_food")
@@ -38,22 +43,26 @@ def get_context(user_prompt):
         food_context = get_food_list(type_of_food, filter_tags)
         context += f"\nThông tin về món ăn:\n{food_context}\n"
 
+    # Check for 'restaurant' intent and fetch relevant data
     if "restaurant" in routing_dict:
         restaurant_data = routing_dict.get("restaurant", {})
         filter_tags = restaurant_data.get("filter_tags")
         restaurant_context = get_restaurant(filter_tags)
         context += f"\nThông tin về nhà hàng:\n{restaurant_context}\n"
 
+    # Check for 'destination' intent and fetch relevant data
     if "destination" in routing_dict:
         destination_data = routing_dict.get("destination", {})
         filter_tags = destination_data.get("filter_tags")
         destination_context = get_destination(filter_tags)
         context += f"\nThông tin về địa điểm:\n{destination_context}\n"
 
+    # Check for 'planning' intent (itinerary generation)
     if "planning" in routing_dict:
         planning_flag = True
         planning_data = routing_dict.get("planning", {})
         
+        # Set default values if not provided
         time = planning_data.get("time") or "3 ngày"
         budget = planning_data.get("budget") or "5 triệu"
         prefer = planning_data.get("prefer") or "hải sản, biển"
@@ -61,6 +70,7 @@ def get_context(user_prompt):
         destination_context = get_destination(prefer)
         restaurant_context = get_restaurant(prefer)
         
+        # Build structured context for the Planning Agent
         context += f"\n=========================================\n"
         context += f"YÊU CẦU LẬP LỊCH TRÌNH:\n"
         context += f"- Thời gian: {time}\n"
@@ -74,27 +84,35 @@ def get_context(user_prompt):
     return {"planning_flag" : planning_flag, "context" : context}
 
 def get_response(user_prompt: str, context: dict):
+    """
+    Routes the prompt to either the general Response Agent or the Planning Agent
+    based on the planning_flag.
+    """
     end_context = context["context"]
     final_user_prompt = user_prompt + f"\nSau đây là các thông tin liên quan cho bạn tham khảo:\n{end_context}"
     
     if context["planning_flag"] == False:
+        # Standard chat response
         end_response = get_agent_response(final_user_prompt)
     else:
+        # Itinerary generation response
         end_response = get_planning_agent_response(final_user_prompt)
 
     return {"agent_response" : end_response}
 
 # ==========================================
-# XÂY DỰNG API ENDPOINT
+# API ENDPOINTS
 # ==========================================
 @app.post("/api/chat")
 def api_get_answer(request: ChatRequest):
     """
-    Return answer for user
+    Primary endpoint for processing user chat requests and returning AI-generated answers.
     """
     try:
-        
+        # 1. Fetch context based on intent
         ctx = get_context(request.user_prompt)
+        
+        # 2. Generate final response from agents
         result = get_response(request.user_prompt, ctx)
         
         return {
@@ -103,4 +121,5 @@ def api_get_answer(request: ChatRequest):
         }
         
     except Exception as e:
+        # Handle unexpected errors gracefully
         raise HTTPException(status_code=500, detail=f"System error: {str(e)}")
