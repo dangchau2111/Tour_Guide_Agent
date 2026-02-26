@@ -8,7 +8,8 @@ import json
 user_prompt = "Tôi muốn tìm các nhà hàng hải sản"
 
 routing_json_string = get_routing_from_orchestrator(user_prompt)
-print(routing_json_string)
+# print(routing_json_string)
+
 # Convert the routing JSON string to a Python dictionary
 try:
     routing_dict = json.loads(routing_json_string)
@@ -46,6 +47,7 @@ if "destination" in routing_dict:
     destination_context = get_destination(filter_tags)
     context += f"\nThông tin về địa điểm:\n{destination_context}\n"
 
+# print(context)
 
 user_prompt += f"\nSau đây là các thông tin liên quan cho bạn tham khảo:\n{context}"
 response = get_agent_response(user_prompt)

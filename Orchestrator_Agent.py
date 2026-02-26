@@ -66,7 +66,7 @@ def validate_route_json(agent_response, current_prompt):
     
 def get_routing_from_orchestrator(user_prompt:str):
 
-    max_retries = 3
+    max_retries = 1
     for attempt in range(max_retries):
         # Get response from LLM
         agent_response = get_route_json(user_prompt)
