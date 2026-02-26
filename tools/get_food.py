@@ -1,6 +1,7 @@
 import pandas as pd
 import difflib
 import os
+import unicodedata
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -39,9 +40,8 @@ def get_food_list(type_of_food : str, filter_tags : str):
         sim_scores_list.append(score_percentage)
 
     df_filtered["sim_score"] = sim_scores_list
-
+    
     df_result = df_filtered.nlargest(5, 'sim_score').copy()
 
     return df_result[["ten_mon_an", "Description"]]
 
-# print(get_food_list( type_of_food = "món chính", filter_tags = "ăn sáng"))

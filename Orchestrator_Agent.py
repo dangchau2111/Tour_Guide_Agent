@@ -21,7 +21,7 @@ class FoodExtraction(BaseModel):
     filter_tags: str
 
 # Get system prompt
-with open("prompts\orchestrator_agent.txt", 'r', encoding='utf-8') as file:
+with open(r"prompts\orchestrator_agent.txt", 'r', encoding='utf-8') as file:
     system_prompt = file.read()
     
 
