@@ -21,6 +21,8 @@ Here are the rules for the chosen category object:
    - "budget" (string or null): Extract the budget constraint (e.g., "5 triệu", "10 triệu", "tiết kiệm", "giá rẻ"). Set to null if not mentioned.
    - "prefer" (string or null): Extract the user's specific preferences, focus, or priority activities for the trip (e.g., "hải sản, biển", "khám phá văn hóa", "yên tĩnh, nghỉ dưỡng"). Set to null if not mentioned, DO NOT set province or city like "Quy Nhơn", "Bình Định".
 
+5. "chat" (Object): Use for general conversation, greetings, self-introductions, or questions about the assistant's capabilities. Output: {"chat": {}}
+
 Keep all extracted values as concise as possible.
 
 Example 1 (Food):
@@ -46,3 +48,11 @@ Output: {"planning": {"time": null, "budget": null, "prefer": "quanh thành ph�
 Example 6 (Forced Single Intent Resolution):
 User: "Lập lịch trình 2 ngày đi biển giúp mình. À cho mình xin vài địa chỉ quán chè luôn."
 Output: {"planning": {"time": "2 ngày", "budget": null, "prefer": "biển, quán chè"}}
+
+Example 7 (General Chat):
+User: "Bạn là ai vậy?"
+Output: {"chat": {}}
+
+Example 8 (General Chat):
+User: "Giới thiệu bản thân bạn đi."
+Output: {"chat": {}}

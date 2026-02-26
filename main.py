@@ -35,6 +35,10 @@ def get_context(user_prompt):
 
     context = ""
 
+    # If do not need to call tools
+    if "chat" in routing_dict:
+        return {"planning_flag": False, "context": ""}
+    
     # Check for 'food' intent and fetch relevant data
     if "food" in routing_dict:
         food_data = routing_dict.get("food", {}) 
